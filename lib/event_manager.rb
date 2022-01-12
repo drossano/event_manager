@@ -1,9 +1,25 @@
 require 'csv'
 require 'google/apis/civicinfo_v2'
 require 'erb'
+require 'pry-byebug'
 
 def clean_zipcode(zipcode)
   zipcode.to_s.rjust(5, '0')[0..4]
+end
+
+def clean_phone_number(phone_number)
+  number_digits = phone_number.to_s.tr('^0-9','')
+  if  number_digits[0] != "1" && number_digits.length == 11 && number_digits.length > 11 || number_digits.length < 10
+    "Invalid Number"
+  elsif  number_digits[0] == "1" && number_digits.length
+    formatted_number(number_digits[1..10])
+  else
+    formatted_number(number_digits)
+  end
+end
+
+def formatted_number(digits)
+  "(#{digits[0..2]}) #{digits[3..5]}-#{digits[6..9]}"
 end
 
 def legislators_by_zipcode(zip)
@@ -48,6 +64,8 @@ contents.each do |row|
   name = row[:first_name]
 
   zipcode = clean_zipcode(row[:zipcode])
+
+  phone_number = clean_phone_number(row[:homephone])
 
   legislators = legislators_by_zipcode(zipcode)
 
