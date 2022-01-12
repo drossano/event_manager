@@ -1,10 +1,15 @@
 require 'csv'
 require 'google/apis/civicinfo_v2'
 require 'erb'
-require 'pry-byebug'
+require 'time'
 
 def clean_zipcode(zipcode)
   zipcode.to_s.rjust(5, '0')[0..4]
+end
+
+def get_hours(time)
+  date_time = Time.strptime(time, "%m/%d/%y %H:%M")
+  date_time.hour
 end
 
 def clean_phone_number(phone_number)
@@ -73,3 +78,20 @@ contents.each do |row|
 
   save_thank_you_letter(id,form_letter)
 end
+
+def peak_hours
+  contents = CSV.open(
+    'event_attendees.csv',
+    headers: true, 
+    header_converters: :symbol
+  )
+  hours = Array.new
+  contents.each do |row|
+    date_time = Time.strptime(row[:regdate], "%m/%d/%y %H:%M")
+    hours.push(date_time.hour)
+  end
+  hour_counts = hours.tally
+  hour_counts.max_by{|k,v| v}[0]
+end
+
+peak_hours
