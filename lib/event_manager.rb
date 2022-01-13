@@ -83,13 +83,23 @@ contents.each do |row|
 
   date_time = Time.strptime(row[:regdate], "%m/%d/%y %H:%M")
   hours.push(date_time.hour)
-  week_days.push((date_time.wday))
+  week_days.push((date_time.strftime("%A")))
+end
+
+def clean_hours(hours)
+ hours.map do |k|
+    if k > 12
+      "#{k -= 12}:00 pm"
+    else
+      "#{k}:00 am"
+    end
+    end
 end
 
 def peak_registration(times)
   time_counts = times.tally
-  time_counts.max_by{|k,v| v}[0]
+  time_counts.sort_by{ |time, registrations| -registrations}
 end
 
-puts peak_registration(hours)
-puts peak_registration(week_days)
+peak_hours =  peak_registration(clean_hours(hours))
+peak_days = peak_registration(week_days)
