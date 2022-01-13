@@ -2,6 +2,7 @@ require 'csv'
 require 'google/apis/civicinfo_v2'
 require 'erb'
 require 'time'
+require 'date'
 
 def clean_zipcode(zipcode)
   zipcode.to_s.rjust(5, '0')[0..4]
@@ -64,6 +65,7 @@ contents = CSV.open(
 template_letter = File.read('form_letter.erb')
 erb_template = ERB.new template_letter
 hours = Array.new
+week_days = Array.new
 
 contents.each do |row|
   id = row[0]
@@ -81,11 +83,13 @@ contents.each do |row|
 
   date_time = Time.strptime(row[:regdate], "%m/%d/%y %H:%M")
   hours.push(date_time.hour)
+  week_days.push((date_time.wday))
 end
 
-def peak_hours(hours)
-  hour_counts = hours.tally
-  hour_counts.max_by{|k,v| v}[0]
+def peak_registration(times)
+  time_counts = times.tally
+  time_counts.max_by{|k,v| v}[0]
 end
 
-puts peak_hours(hours)
+puts peak_registration(hours)
+puts peak_registration(week_days)
