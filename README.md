@@ -1,0 +1,2 @@
+# Event Manager
+This project is a part of [The Odin Project's](https://www.theodinproject.com/) Ruby curriculum. The majority of it was done by following a tutorial. The functionality of cleaning phone numbers and determining the peak hours and days of registration were posed as problems to solve.
